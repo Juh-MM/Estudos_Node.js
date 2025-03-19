@@ -1,8 +1,7 @@
-//process.stdin.pipe(process.stdout)
+//simular o front pedindo uma requisição pesada
 
-import{ Readable, Writable, Transform } from 'node:stream'
+import{ Readable } from 'node:stream'
 
-//tream de leitura
 class OneToHundredStreams extends Readable {
     index = 1
 
@@ -23,29 +22,10 @@ class OneToHundredStreams extends Readable {
                 this.push(buf)
             }
     }, 1000)
-    }
+    } 
 }
 
-//stream de tranformação 
-class InverseNumberStream{
-    _transform(chunk, encoding, callback){
-        const transformed = Number(chunk.toString()) * -1
-
-        callback(null, Buffer.form(String(transformed)))
-    }
-}
-
-//stream de escrita
-class MultiplyByTenStream extends Writable {
-    _write(chunk, encoding, callback) {
-        console.log(Number(chunk.toString()) * 10)
-        callback()
-    }
-}
-
-
-new OneToHundredStreams()
-    .pipe(new InverseNumberStream ())
-    .pipe(new MultiplyByTenStream ());
-
-
+fetch('http://localhost:3334' , {
+    method: 'POST',
+    body: new OneToHundredStreams(),
+})
